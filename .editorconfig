@@ -7,3 +7,8 @@ indent_size = 2
 end_of_line = lf
 insert_final_newline = true
 trim_trailing_whitespace = true
+
+[**/*.vue]
+# Prevent WebStorm from indenting the scripts inside the components,
+# to avoid fighting with ES-Lint
+ij_html_do_not_indent_children_of_tags = script
