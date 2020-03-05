@@ -20,7 +20,7 @@ export default class PageIndex extends Vue {
   dependencies: ProjectDependencies|null = null;
 
   mounted() {
-    const input = '[ ] foo\n[ ] bar';
+    const input = '[ ] foo\n[ ] bar :#bar\n[x] baz :<#bar ';
     this.project = parse(input).project;
     this.dependencies = calculateDependencies(this.project);
   }
