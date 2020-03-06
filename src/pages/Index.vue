@@ -1,8 +1,6 @@
 <template>
   <q-page class="flex flex-center">
-    <GraphCanvas v-bind:dependencies="dependencies" v-bind:project="project">
-
-    </GraphCanvas>
+    <GraphCanvas></GraphCanvas>
   </q-page>
 </template>
 
@@ -10,19 +8,18 @@
 import Vue from 'vue'
 import Component from 'vue-class-component';
 import GraphCanvas from '../components/GraphCanvas.vue';
-import {Project, ProjectDependencies, parse,calculateDependencies} from 'project.txt';
+import {getModule} from 'vuex-module-decorators';
+import MainStoreModule from '../store/MainStoreModule';
 
   @Component({
     components: {GraphCanvas}
   })
 export default class PageIndex extends Vue {
-  project: Project|null = null;
-  dependencies: ProjectDependencies|null = null;
+  store = getModule(MainStoreModule);
 
   mounted() {
     const input = '[ ] foo\n[ ] bar :#bar\n[x] baz :<#bar ';
-    this.project = parse(input).project;
-    this.dependencies = calculateDependencies(this.project);
+    this.store.loadProject(input);
   }
 
 }
