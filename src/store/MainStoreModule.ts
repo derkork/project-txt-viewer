@@ -53,6 +53,8 @@ export default class MainStoreModule extends VuexModule {
         label: task.title,
         class: 'task',
         task: task,
+        width: 100,
+        height: 20,
         rx: 5,
         ry: 5
       });

@@ -18,7 +18,7 @@ export default class PageIndex extends Vue {
   store = getModule(MainStoreModule);
 
   mounted() {
-    const input = '[ ] foo\n[ ] bar :#bar\n[x] baz :<#bar ';
+    const input = '[ ] foo :#foo\n[ ] bar :#bar\n[x] baz :<#bar \n[ ] bam :<#bar :<#foo';
     this.store.loadProject(input);
   }
 
