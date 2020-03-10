@@ -19,7 +19,7 @@
 <script lang="ts">
 import {Prop, Vue} from 'vue-property-decorator';
 import Component from 'vue-class-component';
-import {GraphEdge, Node} from 'dagre';
+import {GraphEdge} from 'dagre';
 
 @Component
 export default class TaskPath extends Vue {

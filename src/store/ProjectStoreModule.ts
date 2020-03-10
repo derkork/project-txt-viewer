@@ -10,12 +10,11 @@ import * as dagre from 'dagre';
   namespaced: true,
   store: Store
 })
-export default class MainStoreModule extends VuexModule {
+export default class ProjectStoreModule extends VuexModule {
   public edges: GraphEdge[] = [];
   public nodes: Node[] = [];
   public project: Project | null = null;
   public dependencies: ProjectDependencies | null = null;
-
 
   @Mutation
   public UPDATE_EDGES(edges: GraphEdge[]) {

@@ -8,19 +8,42 @@
           round
           icon="menu"
           aria-label="Menu"
-          @click="leftDrawerOpen = !leftDrawerOpen"
+          @click="toggleSidebar"
         />
 
         <q-toolbar-title>
-          Quasar App
+          Project.txt Viewer
         </q-toolbar-title>
+        <div>
+          <q-btn-toggle
+            v-model="viewMode"
+            push
+            rounded
+            toggle-color="light-blue"
+            :options="[
+          {value: 0, slot: 'text'},
+          {value: 1 , slot: 'split'},
+          {value: 2,  slot: 'graph'}
+        ]"
+          >
+            <template v-slot:text>
+                <q-icon name="subject" />
+            </template>
 
-        <div>Quasar v{{ $q.version }}</div>
+            <template v-slot:split>
+              <q-icon name="vertical_split" />
+            </template>
+
+            <template v-slot:graph>
+              <q-icon name="visibility" />
+            </template>
+          </q-btn-toggle>
+        </div>
       </q-toolbar>
     </q-header>
 
     <q-drawer
-      v-model="leftDrawerOpen"
+      v-model="sidebarVisible"
       show-if-above
       bordered
       content-class="bg-grey-1"
@@ -30,18 +53,13 @@
           header
           class="text-grey-8"
         >
-          Essential Links
+          Options
         </q-item-label>
-        <essential-link
-          v-for="link in essentialLinks"
-          :key="link.title"
-          v-bind="link"
-        />
       </q-list>
     </q-drawer>
 
     <q-page-container>
-      <router-view />
+      <router-view/>
     </q-page-container>
   </q-layout>
 </template>
@@ -49,53 +67,31 @@
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import EssentialLink from '../components/EssentialLink.vue';
+import {getModule} from 'vuex-module-decorators';
+import AppStateStoreModule from '../store/AppStateStoreModule';
+import {ViewMode} from "../store/ViewMode";
 
 @Component({
-  components: {
-    EssentialLink
-  }
+  components: {}
 })
 export default class MainLayout extends Vue {
-  leftDrawerOpen:boolean = false;
 
-  essentialLinks = [
-    {
-      title: 'Docs',
-      caption: 'quasar.dev',
-      icon: 'school',
-      link: 'https://quasar.dev'
-    },
-    {
-      title: 'Github',
-      caption: 'github.com/quasarframework',
-      icon: 'code',
-      link: 'https://github.com/quasarframework'
-    },
-    {
-      title: 'Discord Chat Channel',
-      caption: 'chat.quasar.dev',
-      icon: 'chat',
-      link: 'https://chat.quasar.dev'
-    },
-    {
-      title: 'Forum',
-      caption: 'forum.quasar.dev',
-      icon: 'record_voice_over',
-      link: 'https://forum.quasar.dev'
-    },
-    {
-      title: 'Twitter',
-      caption: '@quasarframework',
-      icon: 'rss_feed',
-      link: 'https://twitter.quasar.dev'
-    },
-    {
-      title: 'Facebook',
-      caption: '@QuasarFramework',
-      icon: 'public',
-      link: 'https://facebook.quasar.dev'
-    }
-  ];
+  appState = getModule(AppStateStoreModule)
+
+  get sidebarVisible() {
+    return this.appState.sidebarVisible;
+  }
+
+  get viewMode() {
+    return this.appState.viewMode;
+  }
+
+  set viewMode(newMode:ViewMode) {
+    this.appState.setViewMode(newMode);
+  }
+
+  toggleSidebar() {
+    this.appState.toggleSidebarVisibility();
+  }
 }
 </script>

@@ -42,7 +42,7 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import {getModule} from 'vuex-module-decorators';
-import MainStoreModule from '../store/MainStoreModule';
+import ProjectStoreModule from '../store/ProjectStoreModule';
 import {GraphEdge, Node} from 'dagre';
 import TaskNode from './TaskNode.vue';
 import TaskPath from './TaskPath.vue';
@@ -50,7 +50,7 @@ import TaskPath from './TaskPath.vue';
   components: {TaskPath, TaskNode}
 })
 export default class GraphCanvas extends Vue {
-  store = getModule(MainStoreModule)
+  store = getModule(ProjectStoreModule)
 
   get nodes():Node[] {
     return this.store.nodes;
