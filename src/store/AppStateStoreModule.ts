@@ -10,7 +10,7 @@ import {ViewMode} from './ViewMode';
 })
 export default class AppStateStoreModule extends VuexModule {
   public sidebarVisible:boolean = false;
-  public viewMode:ViewMode = ViewMode.Text;
+  public viewMode:ViewMode = ViewMode.Split;
 
   @Mutation
   public UPDATE_SIDEBAR_VISIBILITY(sidebarVisible:boolean) {
@@ -23,12 +23,12 @@ export default class AppStateStoreModule extends VuexModule {
   }
 
   @Action
-  public toggleSidebarVisibility() {
-    this.UPDATE_SIDEBAR_VISIBILITY(!this.sidebarVisible);
+  setViewMode(newMode: ViewMode) {
+    this.UPDATE_VIEW_MODE(newMode);
   }
 
   @Action
-  setViewMode(newMode: ViewMode) {
-    this.UPDATE_VIEW_MODE(newMode);
+  public setSidebarVisible(value: boolean) {
+    this.UPDATE_SIDEBAR_VISIBILITY(value);
   }
 }
