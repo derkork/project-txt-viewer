@@ -50,7 +50,6 @@ export default class PageIndex extends Vue {
   }
 
   selectLineNumber(evt: number) {
-    console.log('Selecting task with line: ', evt);
     const codeMirror: CodeMirror = this.$refs.codeMirror as CodeMirror;
     // @ts-ignore
     codeMirror.setCursorToLine(evt);
