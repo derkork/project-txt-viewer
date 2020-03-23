@@ -3,7 +3,7 @@
 
 This is an application for viewing files in [`project.txt` format](https://github.com/derkork/project.txt-spec). It provides a very simple editor and a graphical overview of your project. The graphical view is updated live as you type.
 
-This app is currently in development and is not yet ready for prime time.
+This app is currently in development and is not yet ready for prime time. You can [try the current version online](https://project-txt-viewer.netlify.com/) and see if it works for you.
 
 ## Currently implemented features
 
