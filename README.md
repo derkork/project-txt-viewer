@@ -1,26 +1,25 @@
-# Project.txt Viewer (projecttxt-viewer)
+# Project.txt - Viewer
+## What is it?
 
-A viewer for project.txt files.
+This is an application for viewing files in [`project.txt` format](https://github.com/derkork/project.txt-spec). It provides a very simple editor and a graphical overview of your project. The graphical view is updated live as you type.
 
-## Install the dependencies
-```bash
-npm install
-```
+This app is currently in development and is not yet ready for prime time.
 
-### Start the app in development mode (hot-code reloading, error reporting, etc.)
-```bash
-quasar dev
-```
+## Currently implemented features
 
-### Lint the files
-```bash
-npm run lint
-```
+* You can open, edit and save `project.txt` files.
+* Live rendering of the project dependency graph and task status.
+* Calculation of finish dates for each task.
+* Assigned team members will be shown with their Gravatars.
+* You can double-click on a task in the graph view to quickly jump to its definition in the text file.
+* You can drag the graph view with your mouse and zoom with the scroll wheel.
 
-### Build the app for production
-```bash
-quasar build
-```
+## Feature short-list
 
-### Customize the configuration
-See [Configuring quasar.conf.js](https://quasar.dev/quasar-cli/quasar-conf-js).
+* Get a list of tasks that can be worked on right now, so you can easily see what is the next step in your project.
+* Get tasks lists per team member, so everyone can see what is his next step.
+* Filter functionality to filter out tasks by tag/label, team member, status, etc.
+* Proper syntax highlighting for the code editor.
+
+
+
