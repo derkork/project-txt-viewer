@@ -1,20 +1,59 @@
 <template>
-  <g :transform="rootTransform">
-    <rect :class="{ node:true, done:isDone, on_hold: isOnHold, in_progress: isInProgress }"
+  <g :transform="rootTransform" :class="{done:isDone, on_hold: isOnHold, in_progress: isInProgress}"
+    v-on:dblclick="selectTaskInEditor"
+  >
+    <rect class="node-background"
           rx="5"
           ry="5"
           :width="width"
           :height="height">
     </rect>
-    <g :class="{ label:true, done:isDone, on_hold: isOnHold, in_progress: isInProgress }"
-       v-bind:transform="centerTransform">
+    <g :transform="centerTransform">
       <text text-anchor="middle"
+            class="node-label"
             v-for="(line, index) in wrappedText"
             :y="((-wrappedText.length/2) + 0.5 + (index)) + 'em'"
             :key="line"
       >
         {{line}}
       </text>
+    </g>
+    <!-- Task effort   -->
+    <g v-if="effort"
+      :transform="`translate(${width/2+10},${height-height/5 + 10})`"
+      >
+      <rect class="duration-background"
+            :width="width/2" :height="height/5"
+            rx="5"
+            ry="5"
+      >
+      </rect>
+      <g :transform="`translate(${width/4},${height/5/2})`">
+        <text text-anchor="middle"
+              class="duration-label"
+              y="0.4em">
+          {{effort}}
+        </text>
+      </g>
+    </g>
+
+    <!-- Finish date -->
+    <g v-if="!isDone"
+      :transform="`translate(${-10},${height-height/5 + 10})`"
+      >
+      <rect class="duration-background"
+            :width="width/2" :height="height/5"
+            rx="5"
+            ry="5"
+      >
+      </rect>
+      <g :transform="`translate(${width/4},${height/5/2})`">
+        <text text-anchor="middle"
+              class="duration-label"
+              y="0.4em">
+          {{finishDate}}
+        </text>
+      </g>
     </g>
     <!-- Gravatar icons for all assigned people  -->
     <g
@@ -32,35 +71,48 @@
 </template>
 
 <!--suppress SassScssResolvedByNameOnly -->
-<style lang="scss" scoped>
-  rect.node {
+<style lang="scss">
+  rect.node-background, rect.duration-background {
     fill: $blue;
     stroke: $blue-11;
     stroke-width: 2px;
+  }
 
-    &.in_progress {
+  text.node-label, text.duration-label {
+    fill: white;
+    font-family: 'Open Sans Condensed', "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 1.5em;
+  }
+
+  text.duration-label {
+    font-size: 1.0em;
+  }
+
+  .in_progress {
+    rect.node-background, rect.duration-background {
       fill: $yellow;
       stroke: $yellow-11;
     }
+    text.node-label, text.duration-label {
+      fill: black;
+    }
+  }
 
-    &.done {
+  .done {
+    rect.node-background, rect.duration-background {
       fill: $green;
       stroke: $green-11;
     }
+  }
 
-    &.on_hold {
+  .on_hold {
+    rect.node-background, rect.duration-background {
       fill: $red;
       stroke: $red-11;
     }
   }
 
-  .label text {
-    fill: white;
-  }
 
-  .label.in_progress text {
-    fill: black;
-  }
 </style>
 
 <script lang="ts">
@@ -68,8 +120,10 @@ import {Prop, Vue} from 'vue-property-decorator';
 import Component from 'vue-class-component';
 import {Node} from 'dagre';
 import {NodeRadius} from '../Constants';
-import {Person, TaskState} from 'project.txt';
+import {Person, Task, TaskState, FinishDate} from 'project.txt';
 import Gravatar from './Gravatar.vue';
+import lightFormat from 'date-fns/lightFormat';
+import {EventBus} from '../EventBus';
 
 @Component({
   components: {Gravatar}
@@ -78,9 +132,8 @@ export default class TaskNode extends Vue {
   @Prop({default: null, required: true})
   private node!: Node;
 
-
   get wrappedText(): string[] {
-    const label = this.node.task.title as string;
+    const label = this.task.title as string;
     const words = label.split(/\s+/);
 
     let lines: string[] = [];
@@ -110,16 +163,25 @@ export default class TaskNode extends Vue {
     return lines;
   }
 
+  get finishDate(): string {
+    const finishDate = (this.node.finishDate as FinishDate);
+    return lightFormat(finishDate.date, 'yyyy-MM-dd') + (finishDate.hasUnknowns ? '?' : '');
+  }
+
+  get task() : Task {
+    return this.node.task;
+  }
+
   get isDone() {
-    return this.node.task.state === TaskState.Done;
+    return this.task.state === TaskState.Done;
   }
 
   get isOnHold() {
-    return this.node.task.state === TaskState.OnHold;
+    return this.task.state === TaskState.OnHold;
   }
 
   get isInProgress() {
-    return this.node.task.state === TaskState.InProgress;
+    return this.task.state === TaskState.InProgress;
   }
 
   get assignments(): Person[] {
@@ -174,6 +236,21 @@ export default class TaskNode extends Vue {
    */
   get centerY() {
     return NodeRadius / 2;
+  }
+
+  get effort() : string | undefined {
+    if (!this.task.effort) {
+      return undefined;
+    }
+
+    const days = this.task.effort.days;
+    const hours = this.task.effort.hours;
+    const minutes = this.task.effort.minutes;
+    return `${days ? days + 'd' : ''}${hours ? hours + 'h' : ''}${minutes ? minutes + 'm' : ''}`;
+  }
+
+  selectTaskInEditor() {
+    EventBus.$emit('select-task', this.task.lineNumber );
   }
 }
 </script>

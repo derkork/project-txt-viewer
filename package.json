@@ -15,6 +15,7 @@
     "@quasar/extras": "^1.0.0",
     "codemirror": "^5.52.0",
     "dagre": "^0.8.5",
+    "date-fns": "^2.11.0",
     "file-saver": "^2.0.2",
     "project.txt": "file:../projecttxt",
     "quasar": "^1.0.0",

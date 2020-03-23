@@ -1,6 +1,6 @@
 import {Action, Module, Mutation, VuexModule} from 'vuex-module-decorators';
 import Store from './index';
-import {calculateDependencies, parse, Project, ProjectDependencies} from 'project.txt';
+import {calculateDependencies, parse, Project, ProjectDependencies, ProjectCalculationSettings} from 'project.txt';
 
 @Module({
   dynamic: true,
@@ -47,8 +47,8 @@ export default class ProjectStoreModule extends VuexModule {
   @Action
   public parseProjectFromSource() {
     const projectDefinition = this.projectSource;
-    const project = parse(projectDefinition).project;
-    const dependencies = calculateDependencies(project);
+    const project = parse(projectDefinition.toString()).project;
+    const dependencies = calculateDependencies(project, ProjectCalculationSettings.default());
     this.UPDATE_PROJECT(project);
     this.UPDATE_DEPENDENCIES(dependencies);
   }

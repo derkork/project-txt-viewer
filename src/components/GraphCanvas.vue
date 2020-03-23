@@ -100,7 +100,8 @@ export default class GraphCanvas extends Vue {
         width: NodeRadius,
         height: NodeRadius,
         task: task,
-        assignments: dependencies.getAssignments(task)
+        assignments: dependencies.getAssignments(task),
+        finishDate: dependencies.getFinishDate(task)
       });
       const prerequisites = dependencies.getPrerequisites(task);
       for (let prerequisite of prerequisites) {

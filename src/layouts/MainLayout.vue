@@ -97,8 +97,7 @@ import {getModule} from 'vuex-module-decorators';
 import AppStateStoreModule from '../store/AppStateStoreModule';
 import {ViewMode} from '../store/ViewMode';
 import ProjectStoreModule from '../store/ProjectStoreModule';
-import {saveAs} from "file-saver";
-import file from "quasar/src/mixins/file";
+import {saveAs} from 'file-saver';
 
 @Component({
   components: {}

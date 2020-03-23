@@ -14,8 +14,10 @@
 import 'codemirror/lib/codemirror.css';
 import Vue from 'vue';
 import Component from 'vue-class-component';
+
 import {Prop, Watch} from 'vue-property-decorator';
 import {EditorConfiguration, EditorFromTextArea, fromTextArea} from 'codemirror';
+import 'codemirror/addon/selection/active-line';
 
 @Component({})
 export default class CodeMirror extends Vue {
@@ -52,12 +54,13 @@ export default class CodeMirror extends Vue {
   onValueChange(newValue: string) {
     const editorValue = this.editor.getValue();
     if (newValue !== editorValue) {
-      this.skipNextChangeEvent = true
+      this.skipNextChangeEvent = true;
       const scrollInfo = this.editor.getScrollInfo();
       this.editor.setValue(newValue);
       this.editor.scrollTo(scrollInfo.left, scrollInfo.top);
     }
   }
+
 
   @Watch('options')
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -70,5 +73,11 @@ export default class CodeMirror extends Vue {
       }
     }
   }
+
+  public setCursorToLine(newValue:number) {
+    this.editor.setCursor(newValue-1, 0, {scroll: true});
+    this.editor.focus();
+  }
+
 }
 </script>
