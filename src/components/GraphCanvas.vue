@@ -75,7 +75,7 @@ export default class GraphCanvas extends Vue {
   }
 
   zoom(event: WheelEvent) {
-    this.zoomFactor = Math.min(3, Math.max(0.1, this.zoomFactor + 0.01 * -event.deltaY));
+    this.zoomFactor = Math.min(3, Math.max(0.1, this.zoomFactor + 0.1 * -Math.sign(event.deltaY)));
   }
 
 
@@ -100,6 +100,7 @@ export default class GraphCanvas extends Vue {
         width: NodeRadius,
         height: NodeRadius,
         task: task,
+        effectiveState: dependencies.getEffectiveTaskState(task),
         assignments: dependencies.getAssignments(task),
         finishDate: dependencies.getFinishDate(task)
       });
