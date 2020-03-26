@@ -1,6 +1,8 @@
+import { EffectiveTaskState } from 'project.txt/src/main/EffectiveTaskState';
+import { TaskState } from 'project.txt';
 <template>
-  <g :transform="rootTransform" :class="{done:isDone, on_hold: isOnHold, in_progress: isInProgress}"
-    v-on:dblclick="selectTaskInEditor"
+  <g :transform="rootTransform" :class="{done:isDone, on_hold: isOnHold, in_progress: isInProgress, blocked: isBlocked}"
+     v-on:dblclick="selectTaskInEditor"
   >
     <rect class="node-background"
           rx="5"
@@ -20,8 +22,8 @@
     </g>
     <!-- Task effort   -->
     <g v-if="effort"
-      :transform="`translate(${width/2+10},${height-height/5 + 10})`"
-      >
+       :transform="`translate(${width/2+10},${height-height/5 + 10})`"
+    >
       <rect class="duration-background"
             :width="width/2" :height="height/5"
             rx="5"
@@ -39,8 +41,8 @@
 
     <!-- Finish date -->
     <g v-if="!isDone"
-      :transform="`translate(${-10},${height-height/5 + 10})`"
-      >
+       :transform="`translate(${-10},${height-height/5 + 10})`"
+    >
       <rect class="duration-background"
             :width="width/2" :height="height/5"
             rx="5"
@@ -49,9 +51,10 @@
       </rect>
       <g :transform="`translate(${width/4},${height/5/2})`">
         <text text-anchor="middle"
-              class="duration-label"
+              :class="{ 'duration-label':true, is_unknown: finishDateIsUnknown }"
               y="0.4em">
           {{finishDate}}
+          <title>{{finishDateAsDistance}}</title>
         </text>
       </g>
     </g>
@@ -62,6 +65,7 @@
       :transform="`translate(${-50 + (assignments.length - index) * 25},-25)`"
     >
       <gravatar
+        :name="assignment.name"
         :email="assignment.emailAddress"
         :size="50"
       >
@@ -74,25 +78,43 @@
 <style lang="scss">
   rect.node-background, rect.duration-background {
     fill: $blue;
-    stroke: $blue-11;
+    stroke: #0000002f;
     stroke-width: 2px;
   }
 
   text.node-label, text.duration-label {
     fill: white;
+  }
+
+  text.node-label {
     font-family: 'Open Sans Condensed', "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 1.5em;
   }
 
   text.duration-label {
-    font-size: 1.0em;
+    font-size: 0.85em;
+    font-family: 'Open Sans', "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+
+  text.duration-label.is_unknown {
+    font-style: italic;
   }
 
   .in_progress {
     rect.node-background, rect.duration-background {
       fill: $yellow;
-      stroke: $yellow-11;
     }
+
+    text.node-label, text.duration-label {
+      fill: black;
+    }
+  }
+
+  .blocked {
+    rect.node-background, rect.duration-background {
+      fill: $grey-4;
+    }
+
     text.node-label, text.duration-label {
       fill: black;
     }
@@ -101,14 +123,12 @@
   .done {
     rect.node-background, rect.duration-background {
       fill: $green;
-      stroke: $green-11;
     }
   }
 
   .on_hold {
     rect.node-background, rect.duration-background {
       fill: $red;
-      stroke: $red-11;
     }
   }
 
@@ -120,10 +140,12 @@ import {Prop, Vue} from 'vue-property-decorator';
 import Component from 'vue-class-component';
 import {Node} from 'dagre';
 import {NodeRadius} from '../Constants';
-import {Person, Task, TaskState, FinishDate} from 'project.txt';
+import {FinishDate, Person, Task, TaskState} from 'project.txt';
 import Gravatar from './Gravatar.vue';
 import lightFormat from 'date-fns/lightFormat';
 import {EventBus} from '../EventBus';
+import {EffectiveTaskState} from "project.txt/src/main/EffectiveTaskState";
+import {formatDistance, formatDistanceToNow, isSameDay, startOfDay} from "date-fns";
 
 @Component({
   components: {Gravatar}
@@ -163,25 +185,48 @@ export default class TaskNode extends Vue {
     return lines;
   }
 
-  get finishDate(): string {
-    const finishDate = (this.node.finishDate as FinishDate);
-    return lightFormat(finishDate.date, 'yyyy-MM-dd') + (finishDate.hasUnknowns ? '?' : '');
+  get finishDateIsUnknown(): boolean {
+    return (this.node.finishDate as FinishDate).hasUnknowns;
   }
 
-  get task() : Task {
+  get finishDateAsDistance(): string {
+    const baseDate = startOfDay(new Date());
+    const finishDate = startOfDay((this.node.finishDate as FinishDate).date);
+    if (isSameDay(baseDate, finishDate)) {
+      return "today";
+    }
+    return formatDistance(finishDate, baseDate, {
+      addSuffix: true
+    });
+  }
+
+  get finishDate(): string {
+    const finishDate = (this.node.finishDate as FinishDate);
+    return lightFormat(finishDate.date, 'yyyy-MM-dd');
+  }
+
+  get task(): Task {
     return this.node.task;
   }
 
+  get effectiveState(): EffectiveTaskState {
+    return this.node.effectiveState;
+  }
+
+  get isBlocked() {
+    return this.effectiveState === EffectiveTaskState.Blocked;
+  }
+
   get isDone() {
-    return this.task.state === TaskState.Done;
+    return this.effectiveState === EffectiveTaskState.Done;
   }
 
   get isOnHold() {
-    return this.task.state === TaskState.OnHold;
+    return this.effectiveState === EffectiveTaskState.OnHold;
   }
 
   get isInProgress() {
-    return this.task.state === TaskState.InProgress;
+    return this.effectiveState === EffectiveTaskState.InProgress;
   }
 
   get assignments(): Person[] {
@@ -238,7 +283,7 @@ export default class TaskNode extends Vue {
     return NodeRadius / 2;
   }
 
-  get effort() : string | undefined {
+  get effort(): string | undefined {
     if (!this.task.effort) {
       return undefined;
     }
@@ -250,7 +295,7 @@ export default class TaskNode extends Vue {
   }
 
   selectTaskInEditor() {
-    EventBus.$emit('select-task', this.task.lineNumber );
+    EventBus.$emit('select-task', this.task.lineNumber);
   }
 }
 </script>

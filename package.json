@@ -17,7 +17,7 @@
     "dagre": "^0.8.5",
     "date-fns": "^2.11.0",
     "file-saver": "^2.0.2",
-    "project.txt": "0.0.1",
+    "project.txt": "0.1.2",
     "quasar": "^1.9.11",
     "ts-md5": "^1.2.7",
     "vue-class-component": "^7.2.3",
