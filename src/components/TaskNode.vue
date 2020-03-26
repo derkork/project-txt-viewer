@@ -152,8 +152,8 @@ import {FinishDate, Person, Task, TaskState} from 'project.txt';
 import Gravatar from './Gravatar.vue';
 import lightFormat from 'date-fns/lightFormat';
 import {EventBus} from '../EventBus';
-import {EffectiveTaskState} from "project.txt/src/main/EffectiveTaskState";
-import {formatDistance, formatDistanceToNow, isSameDay, startOfDay} from "date-fns";
+import {EffectiveTaskState} from 'project.txt/src/main/EffectiveTaskState';
+import {formatDistance, isSameDay, startOfDay} from 'date-fns';
 
 @Component({
   components: {Gravatar}
@@ -201,7 +201,7 @@ export default class TaskNode extends Vue {
     const baseDate = startOfDay(new Date());
     const finishDate = startOfDay((this.node.finishDate as FinishDate).date);
     if (isSameDay(baseDate, finishDate)) {
-      return "today";
+      return 'today';
     }
     return formatDistance(finishDate, baseDate, {
       addSuffix: true
