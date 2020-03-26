@@ -1,7 +1,7 @@
 import { EffectiveTaskState } from 'project.txt/src/main/EffectiveTaskState';
 import { TaskState } from 'project.txt';
 <template>
-  <g :transform="rootTransform" :class="{done:isDone, on_hold: isOnHold, in_progress: isInProgress, blocked: isBlocked}"
+  <g :transform="rootTransform" :class="{done:isDone, on_hold: isOnHold, in_progress: isInProgress, blocked: isBlocked, is_milestone: isMilestone}"
      v-on:dblclick="selectTaskInEditor"
   >
     <rect class="node-background"
@@ -130,7 +130,15 @@ import { TaskState } from 'project.txt';
     rect.node-background, rect.duration-background {
       fill: $red;
     }
+
   }
+  .is_milestone {
+    rect.node-background {
+      stroke-width: 8px;
+      stroke-dasharray: 5;
+    }
+  }
+
 
 
 </style>
@@ -227,6 +235,10 @@ export default class TaskNode extends Vue {
 
   get isInProgress() {
     return this.effectiveState === EffectiveTaskState.InProgress;
+  }
+
+  get isMilestone() {
+    return this.task.state === TaskState.Milestone;
   }
 
   get assignments(): Person[] {
