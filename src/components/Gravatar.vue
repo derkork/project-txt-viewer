@@ -5,6 +5,7 @@
       <circle :cx="size/2" :cy="size/2" :r="size/2 - 2" fill="#FFFFFF"/>
     </clipPath>
     <image :width="size" :height="size" :xlink:href="url" :clip-path="`url(#${uid})`"/>
+    <title v-if="name.length">{{name}}</title>
   </g>
 </template>
 
@@ -22,6 +23,9 @@ import {uid} from 'quasar';
   components: {TaskPath, TaskNode}
 })
 export default class Gravatar extends Vue {
+  @Prop( {default:''})
+  name!:string;
+
   @Prop({default: ''})
   email!: string;
 
