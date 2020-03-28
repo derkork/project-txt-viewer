@@ -9,7 +9,33 @@
         ></code-mirror>
       </template>
       <template slot="right">
-        <graph-canvas></graph-canvas>
+        <q-tabs
+          v-model="tab"
+          dense
+          class="text-grey"
+          align="justify"
+          narrow-indicator
+        >
+          <q-tab name="graph" label="Project graph"/>
+          <q-tab name="next-steps" label="Next steps"/>
+        </q-tabs>
+        <q-separator/>
+        <q-tab-panels
+          class="col column"
+          v-model="tab" animated>
+          <q-tab-panel
+            class="col column"
+            name="graph"
+            style="padding: 5px 0 0 0"
+          >
+            <graph-canvas></graph-canvas>
+          </q-tab-panel>
+
+          <q-tab-panel name="next-steps">
+            <div class="text-h6">Next steps</div>
+          </q-tab-panel>
+        </q-tab-panels>
+
       </template>
     </splitter>
   </q-page>
@@ -34,7 +60,8 @@ import {EventBus} from '../EventBus';
 export default class PageIndex extends Vue {
   appState = getModule(AppStateStoreModule);
   project = getModule(ProjectStoreModule);
-  options:EditorConfiguration = {
+  tab: string = "graph";
+  options: EditorConfiguration = {
     lineNumbers: true,
     styleActiveLine: {
       nonEmpty: true

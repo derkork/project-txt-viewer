@@ -9,32 +9,43 @@
     @mouseup.left="stopDrag"
     @mousemove="doDrag"
   >
-    <defs>
-      <marker id="triangle" viewBox="0 0 10 10"
-              refX="1" refY="5"
-              markerUnits="strokeWidth"
-              markerWidth="10" markerHeight="10"
-              orient="auto">
-        <path d="M 0 0 L 10 5 L 0 10 z" fill="#f000000"/>
-      </marker>
-    </defs>
     <g :transform="centerTransform">
-      <task-node
-        v-for="node in nodes"
-        :key="node.uid"
-        v-bind:node="node"
-      >
-      </task-node>
-
+      <!-- Paths go first so they are UNDER the nodes  -->
       <task-path
         v-for="edge in edges"
         :key="edge.uid"
         v-bind:edge="edge"
       >
       </task-path>
+
+      <task-node
+        v-for="node in nodes"
+        :key="node.task.index"
+        :node="node"
+      >
+      </task-node>
     </g>
   </svg>
 </template>
+
+<style lang="scss">
+  /* Enter and leave animations can use different */
+  /* durations and timing functions.              */
+  .slide-fade-enter-active {
+    transition: all .3s ease;
+  }
+
+  .slide-fade-leave-active {
+    transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+  }
+
+  .slide-fade-enter, .slide-fade-leave-to
+    /* .slide-fade-leave-active below version 2.1.8 */
+  {
+    transform: translateX(10px);
+    opacity: 0;
+  }
+</style>
 
 <script lang="ts">
 import Vue from 'vue';

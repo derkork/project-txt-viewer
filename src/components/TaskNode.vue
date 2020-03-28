@@ -1,77 +1,80 @@
 import { EffectiveTaskState } from 'project.txt/src/main/EffectiveTaskState';
 import { TaskState } from 'project.txt';
 <template>
-  <g :transform="rootTransform" :class="{done:isDone, on_hold: isOnHold, in_progress: isInProgress, blocked: isBlocked, is_milestone: isMilestone}"
-     v-on:dblclick="selectTaskInEditor"
-  >
-    <rect class="node-background"
-          rx="5"
-          ry="5"
-          :width="width"
-          :height="height">
-    </rect>
-    <g :transform="centerTransform">
-      <text text-anchor="middle"
-            class="node-label"
-            v-for="(line, index) in wrappedText"
-            :y="((-wrappedText.length/2) + 0.5 + (index)) + 'em'"
-            :key="line"
-      >
-        {{line}}
-      </text>
-    </g>
-    <!-- Task effort   -->
-    <g v-if="effort"
-       :transform="`translate(${width/2+10},${height-height/5 + 10})`"
-    >
-      <rect class="duration-background"
-            :width="width/2" :height="height/5"
-            rx="5"
-            ry="5"
-      >
-      </rect>
-      <g :transform="`translate(${width/4},${height/5/2})`">
-        <text text-anchor="middle"
-              class="duration-label"
-              y="0.4em">
-          {{effort}}
-        </text>
-      </g>
-    </g>
-
-    <!-- Finish date -->
-    <g v-if="!isDone"
-       :transform="`translate(${-10},${height-height/5 + 10})`"
-    >
-      <rect class="duration-background"
-            :width="width/2" :height="height/5"
-            rx="5"
-            ry="5"
-      >
-      </rect>
-      <g :transform="`translate(${width/4},${height/5/2})`">
-        <text text-anchor="middle"
-              :class="{ 'duration-label':true, is_unknown: finishDateIsUnknown }"
-              y="0.4em">
-          {{finishDate}}
-          <title>{{finishDateAsDistance}}</title>
-        </text>
-      </g>
-    </g>
-    <!-- Gravatar icons for all assigned people  -->
+  <animated-group :x="left" :y="top">
     <g
-      v-for="(assignment,index) in assignments.slice().reverse()"
-      :key="assignment.emailAddress"
-      :transform="`translate(${-50 + (assignments.length - index) * 25},-25)`"
+      :class="{done:isDone, on_hold: isOnHold, in_progress: isInProgress, blocked: isBlocked, is_milestone: isMilestone}"
+      v-on:dblclick="selectTaskInEditor"
     >
-      <gravatar
-        :name="assignment.name"
-        :email="assignment.emailAddress"
-        :size="50"
+      <rect class="node-background"
+            rx="5"
+            ry="5"
+            :width="width"
+            :height="height">
+      </rect>
+      <g :transform="centerTransform">
+        <text text-anchor="middle"
+              class="node-label"
+              v-for="(line, index) in wrappedText"
+              :y="((-wrappedText.length/2) + 0.5 + (index)) + 'em'"
+              :key="line"
+        >
+          {{line}}
+        </text>
+      </g>
+      <!-- Task effort   -->
+      <g v-if="effort"
+         :transform="`translate(${width/2+10},${height-height/5 + 10})`"
       >
-      </gravatar>
+        <rect class="duration-background"
+              :width="width/2" :height="height/5"
+              rx="5"
+              ry="5"
+        >
+        </rect>
+        <g :transform="`translate(${width/4},${height/5/2})`">
+          <text text-anchor="middle"
+                class="duration-label"
+                y="0.4em">
+            {{effort}}
+          </text>
+        </g>
+      </g>
+
+      <!-- Finish date -->
+      <g v-if="!isDone"
+         :transform="`translate(${-10},${height-height/5 + 10})`"
+      >
+        <rect class="duration-background"
+              :width="width/2" :height="height/5"
+              rx="5"
+              ry="5"
+        >
+        </rect>
+        <g :transform="`translate(${width/4},${height/5/2})`">
+          <text text-anchor="middle"
+                :class="{ 'duration-label':true, is_unknown: finishDateIsUnknown }"
+                y="0.4em">
+            {{finishDate}}
+            <title>{{finishDateAsDistance}}</title>
+          </text>
+        </g>
+      </g>
+      <!-- Gravatar icons for all assigned people  -->
+      <g
+        v-for="(assignment,index) in assignments.slice().reverse()"
+        :key="assignment.emailAddress"
+        :transform="`translate(${-50 + (assignments.length - index) * 25},-25)`"
+      >
+        <gravatar
+          :name="assignment.name"
+          :email="assignment.emailAddress"
+          :size="50"
+        >
+        </gravatar>
+      </g>
     </g>
-  </g>
+  </animated-group>
 </template>
 
 <!--suppress SassScssResolvedByNameOnly -->
@@ -132,13 +135,13 @@ import { TaskState } from 'project.txt';
     }
 
   }
+
   .is_milestone {
     rect.node-background {
       stroke-width: 8px;
       stroke-dasharray: 5;
     }
   }
-
 
 
 </style>
@@ -154,9 +157,10 @@ import lightFormat from 'date-fns/lightFormat';
 import {EventBus} from '../EventBus';
 import {EffectiveTaskState} from 'project.txt/src/main/EffectiveTaskState';
 import {formatDistance, isSameDay, startOfDay} from 'date-fns';
+import AnimatedGroup from "./AnimatedGroup.vue";
 
 @Component({
-  components: {Gravatar}
+  components: {AnimatedGroup, Gravatar}
 })
 export default class TaskNode extends Vue {
   @Prop({default: null, required: true})
