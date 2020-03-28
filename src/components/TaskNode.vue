@@ -157,7 +157,7 @@ import lightFormat from 'date-fns/lightFormat';
 import {EventBus} from '../EventBus';
 import {EffectiveTaskState} from 'project.txt/src/main/EffectiveTaskState';
 import {formatDistance, isSameDay, startOfDay} from 'date-fns';
-import AnimatedGroup from "./AnimatedGroup.vue";
+import AnimatedGroup from './AnimatedGroup.vue';
 
 @Component({
   components: {AnimatedGroup, Gravatar}

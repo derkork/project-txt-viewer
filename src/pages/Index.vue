@@ -60,7 +60,7 @@ import {EventBus} from '../EventBus';
 export default class PageIndex extends Vue {
   appState = getModule(AppStateStoreModule);
   project = getModule(ProjectStoreModule);
-  tab: string = "graph";
+  tab: string = 'graph';
   options: EditorConfiguration = {
     lineNumbers: true,
     styleActiveLine: {

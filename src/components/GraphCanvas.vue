@@ -3,7 +3,6 @@
     xmlns="http://www.w3.org/2000/svg"
     xmlns:xlink="http://www.w3.org/1999/xlink"
     class="col"
-    :key="key"
     @wheel="zoom"
     @mousedown.left="startDrag"
     @mouseup.left="stopDrag"
@@ -17,7 +16,6 @@
         v-bind:edge="edge"
       >
       </task-path>
-
       <task-node
         v-for="node in nodes"
         :key="node.task.index"
@@ -27,25 +25,6 @@
     </g>
   </svg>
 </template>
-
-<style lang="scss">
-  /* Enter and leave animations can use different */
-  /* durations and timing functions.              */
-  .slide-fade-enter-active {
-    transition: all .3s ease;
-  }
-
-  .slide-fade-leave-active {
-    transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0);
-  }
-
-  .slide-fade-enter, .slide-fade-leave-to
-    /* .slide-fade-leave-active below version 2.1.8 */
-  {
-    transform: translateX(10px);
-    opacity: 0;
-  }
-</style>
 
 <script lang="ts">
 import Vue from 'vue';
@@ -64,7 +43,6 @@ import Graph = graphlib.Graph;
 })
 export default class GraphCanvas extends Vue {
   store = getModule(ProjectStoreModule);
-  key: number = 0;
   zoomFactor: number = 1;
   offsetX: number = 0;
   offsetY: number = 0;

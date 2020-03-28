@@ -31,7 +31,7 @@ import { EasingType } from 'fatina';
 import {Prop, Vue, Watch} from 'vue-property-decorator';
 import Component from 'vue-class-component';
 import {GraphEdge} from 'dagre';
-import Fatina, {EasingType} from 'fatina';
+import Fatina, {EasingType, ITween} from 'fatina';
 import {uid} from 'quasar';
 
 @Component
@@ -42,9 +42,14 @@ export default class TaskPath extends Vue {
 
   arraySize: number = 0;
   arrayOffset: number = 0;
+  runningTween:ITween | undefined ;
 
   mounted() {
     this.onSpecChange();
+  }
+
+  beforeDestroy() {
+    this.runningTween?.kill();
   }
 
   @Watch('pathSpec')
@@ -56,7 +61,10 @@ export default class TaskPath extends Vue {
     this.$nextTick(() => {
       this.arraySize = (this.$refs.path as SVGPathElement).getTotalLength();
       const obj = {value: this.arraySize};
-      Fatina.tween(obj)
+      if (this.runningTween) {
+        this.runningTween.kill();
+      }
+      this.runningTween = Fatina.tween(obj)
         .to({value: 0}, 1000)
         .setEasing(EasingType.InOutExponential)
         .onUpdate(() => this.arrayOffset = obj.value)
