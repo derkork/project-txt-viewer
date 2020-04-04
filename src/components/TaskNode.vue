@@ -45,7 +45,7 @@ import { TaskState } from 'project.txt';
       <g v-if="!isDone"
          :transform="`translate(${-10},${height-height/5 + 10})`"
       >
-        <rect class="duration-background"
+        <rect :class="{'duration-background': true, is_overdue: isOverdue }"
               :width="width/2" :height="height/5"
               rx="5"
               ry="5"
@@ -53,10 +53,10 @@ import { TaskState } from 'project.txt';
         </rect>
         <g :transform="`translate(${width/4},${height/5/2})`">
           <text text-anchor="middle"
-                :class="{ 'duration-label':true, is_unknown: finishDateIsUnknown }"
+                :class="{ 'duration-label':true, is_unknown: finishDateIsUnknown, is_overdue: isOverdue }"
                 y="0.4em">
             {{finishDate}}
-            <title>{{finishDateAsDistance}}</title>
+            <title>{{finishDateHint}}</title>
           </text>
         </g>
       </g>
@@ -83,6 +83,14 @@ import { TaskState } from 'project.txt';
     fill: $blue;
     stroke: #0000002f;
     stroke-width: 2px;
+  }
+
+  rect.duration-background.is_overdue {
+    fill: $red !important;
+  }
+
+  text.duration-label.is_overdue {
+    fill: white !important;
   }
 
   text.node-label, text.duration-label {
@@ -201,15 +209,32 @@ export default class TaskNode extends Vue {
     return (this.node.finishDate as FinishDate).hasUnknowns;
   }
 
-  get finishDateAsDistance(): string {
+  get isOverdue() : boolean {
+    return (this.node.finishDate as FinishDate).cannotFinishInTime;
+  }
+
+  get finishDateHint(): string {
     const baseDate = startOfDay(new Date());
     const finishDate = startOfDay((this.node.finishDate as FinishDate).date);
+
+    let text = '';
+
     if (isSameDay(baseDate, finishDate)) {
-      return 'today';
+      text = 'today';
     }
-    return formatDistance(finishDate, baseDate, {
-      addSuffix: true
-    });
+    else {
+      text = formatDistance(finishDate, baseDate, {
+        addSuffix: true
+      });
+    }
+
+    if (this.isOverdue) {
+      // when task is overdue it MUST have a due date set.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      text += ' - will finish after due date of ' + lightFormat(this.task.dueDate!, 'yyyy-MM-dd');
+    }
+
+    return text;
   }
 
   get finishDate(): string {
