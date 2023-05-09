@@ -25,7 +25,7 @@
     "vue-property-decorator": "^8.4.0"
   },
   "devDependencies": {
-    "@quasar/app": "^2.1.8",
+    "@quasar/app": "^3.3.3",
     "@quasar/quasar-app-extension-typescript": "^1.0.2",
     "@types/codemirror": "0.0.88",
     "@types/dagre": "^0.7.42",
@@ -35,7 +35,7 @@
     "@typescript-eslint/parser": "^1.12.0",
     "babel-eslint": "^10.0.1",
     "devtron": "^1.4.0",
-    "electron": "^8.0.3",
+    "electron": "^24.2.0",
     "electron-debug": "^3.0.1",
     "electron-devtools-installer": "^2.2.4",
     "eslint": "^6.8.0",
